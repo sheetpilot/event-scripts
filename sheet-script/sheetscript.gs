@@ -11,12 +11,15 @@ function eventListener(e) {
   var range = e.range;
   var records = e.source.getDataRange().getValues();
 
+  const updatedRowIdx = range.getRow().toFixed(0) -1; // getRow() starts index at 1.0
+  const updatedColIdx = range.getColumn().toFixed(0) - 1; // getColumn() starts index at 1.0,
+
   const data = {
     row: getUpdatedRow(records, updatedRowIdx), // row data based of updatedRowIdx in array
-    colName: getColumnName(records), // name of the col lists in array
-    colIdx: range.getColumn().toFixed(0) - 1, // getColumn() starts index at 1.0,
-    rowIdx: range.getRow().toFixed(0) -1 // getRow() starts index at 1.0
-    value: e.value // user updated value
+    colName: getColumnName(records, 0), // name of the col lists in array
+    colIdx: updatedColIdx,
+    rowIdx: updatedRowIdx,
+    value: e.value
   }
   
   //todo: error handling
