@@ -14,16 +14,47 @@ function eventListener(e) {
   const updatedRowIdx = range.getRow().toFixed(0) -1; // getRow() starts index at 1.0
   const updatedColIdx = range.getColumn().toFixed(0) - 1; // getColumn() starts index at 1.0,
 
-  const data = {
-    row: getUpdatedRow(records, updatedRowIdx), // row data based of updatedRowIdx in array
-    colName: getColumnName(records, 0), // name of the col lists in array
-    colIdx: updatedColIdx,
-    rowIdx: updatedRowIdx,
-    value: e.value
+  const editedRow = getUpdatedRow(records, updatedRowIdx); // row data based of updatedRowIdx in array
+  const colList = getColumnName(records, 0);
+  const updatedValue = e.value;
+
+  const data = requestPayload(editedRow, colList, updatedValue, updatedColIdx)
+}
+
+function requestPayload(editedRow, col, updatedValue, colIdx) {
+  if (col[0] != "Applications") {
+    Logger.log("invalid or malformed csv format")
+    return
+  }
+
+  const supportedAppType = ["admin", "api", "payment", "orders", "cards", "catalogue", "users", "auth", "shipping", "queue-master", "webhook"];
+  const editedAppType = editedRow[0];
+
+  if (!supportedAppType.includes(editedAppType)) {
+    Logger.log("app type is not supported in sheetpilot service")
+    return
+  }
+
+  const supportedAction = ["request CPU(string)", "request Memory(string)",	"limit CPU(string)",	"limit Memory(string)", "replica_count(int)"];
+  const editedActionType = col[colIdx]
+  
+   if (!supportedAction.includes(editedActionType)) {
+    Logger.log("action type is not supported in sheetpilot service")
+    return
   }
   
-  //todo: error handling
-  sendTriggerEvent(data)
+  var payload = [
+    {
+      colName : col[0],
+      value : editedAppType
+    },
+    {
+      colName : editedActionType,
+      value: updatedValue
+    }
+  ];
+
+  return JSON.stringify(payload);
 }
 
 // sendTriggerEvent send the sheet data to the sheetpilot apiserver
@@ -31,7 +62,7 @@ function sendTriggerEvent(data) {
   return UrlFetchApp.fetch('http://3.0.54.51:4001/api/v1/sheet', {
     'method' : 'post',
     'contentType': 'application/json',
-    'payload' : JSON.stringify(data)
+    'payload' : data
   });
 }
 
