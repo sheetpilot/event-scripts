@@ -25,7 +25,7 @@ function requestPayload(editedRow, colList) {
       colName: colList[index] ?? '',
       value: rowVal
     }
-  }).filter(item=> item?.colName && item?.colName != '');
+  }).filter(item=> item?.colName && item?.colName !== '');
 
   return JSON.stringify(payload);
 }
