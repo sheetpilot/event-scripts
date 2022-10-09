@@ -27,7 +27,7 @@ function requestPayload(editedRow, colList) {
     }
   });
 
-  return JSON.stringify(data);
+  return JSON.stringify(payload);
 }
 
 // sendTriggerEvent send the sheet data to the sheetpilot apiserver
