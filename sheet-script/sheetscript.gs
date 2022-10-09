@@ -36,8 +36,8 @@ function sendTriggerEvent(data) {
 function getColumnName(values, idx) {
   var col = []
   for (var j = 0; j < values[idx].length; j++) {
-    if (values[0][j]) {
-      col.push(values[0][j]);
+    if (values[idx][j]) {
+      col.push(values[idx][j]);
     }
   }
   return col;
