@@ -19,6 +19,8 @@ function eventListener(e) {
   const updatedValue = e.value;
 
   const data = requestPayload(editedRow, colList, updatedValue, updatedColIdx)
+
+  sendTriggerEvent(data)
 }
 
 function requestPayload(editedRow, col, updatedValue, colIdx) {
@@ -35,7 +37,7 @@ function requestPayload(editedRow, col, updatedValue, colIdx) {
     return
   }
 
-  const supportedAction = ["request CPU(string)", "request Memory(string)",	"limit CPU(string)",	"limit Memory(string)", "replica_count(int)"];
+  const supportedAction = ["Applications", "request CPU(string)", "request Memory(string)",	"limit CPU(string)",	"limit Memory(string)", "replica_count(int)"];
   const editedActionType = col[colIdx]
   
    if (!supportedAction.includes(editedActionType)) {
