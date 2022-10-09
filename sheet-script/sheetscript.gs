@@ -8,55 +8,26 @@ function setUpTrigger() {
 
 // entry point of the trigger method
 function eventListener(e) { 
-  var range = e.range;
   var records = e.source.getDataRange().getValues();
-
-  const updatedRowIdx = range.getRow().toFixed(0) -1; // getRow() starts index at 1.0
-  const updatedColIdx = range.getColumn().toFixed(0) - 1; // getColumn() starts index at 1.0,
+  const updatedRowIdx = e.range.getRow().toFixed(0) -1; // getRow() starts index at 1.0
 
   const editedRow = getUpdatedRow(records, updatedRowIdx); // row data based of updatedRowIdx in array
   const colList = getColumnName(records, 0);
-  const updatedValue = e.value;
 
-  const data = requestPayload(editedRow, colList, updatedValue, updatedColIdx)
+  const data = requestPayload(editedRow, colList)
 
   sendTriggerEvent(data)
 }
 
-function requestPayload(editedRow, col, updatedValue, colIdx) {
-  if (col[0] != "Applications") {
-    Logger.log("invalid or malformed csv format")
-    return
-  }
-
-  const supportedAppType = ["admin", "api", "payment", "orders", "cards", "catalogue", "users", "auth", "shipping", "queue-master", "webhook"];
-  const editedAppType = editedRow[0];
-
-  if (!supportedAppType.includes(editedAppType)) {
-    Logger.log("app type is not supported in sheetpilot service")
-    return
-  }
-
-  const supportedAction = ["Applications", "request CPU(string)", "request Memory(string)",	"limit CPU(string)",	"limit Memory(string)", "replica_count(int)"];
-  const editedActionType = col[colIdx]
-  
-   if (!supportedAction.includes(editedActionType)) {
-    Logger.log("action type is not supported in sheetpilot service")
-    return
-  }
-  
-  var payload = [
-    {
-      colName : col[0],
-      value : editedAppType
-    },
-    {
-      colName : editedActionType,
-      value: updatedValue
+function requestPayload(editedRow, colList) {
+  const payload = editedRow.map((rowVal, index)=>{
+    return {
+      colName: colList[index] ?? '',
+      value: rowVal
     }
-  ];
+  });
 
-  return JSON.stringify(payload);
+  return JSON.stringify(data);
 }
 
 // sendTriggerEvent send the sheet data to the sheetpilot apiserver
